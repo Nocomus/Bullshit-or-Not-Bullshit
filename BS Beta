@@ -1,0 +1,31 @@
+# Import necessary libraries
+import requests
+from youtube_transcript_api import YouTubeTranscriptApi
+from textblob import TextBlob
+
+# Function to analyze YouTube video for false statements
+def analyze_video(video_id):
+    # Fetch the transcript of the video
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    
+    # Combine transcript into a single string
+    full_transcript = ' '.join([entry['text'] for entry in transcript])
+    
+    # Analyze the transcript for false statements
+    blob = TextBlob(full_transcript)
+    false_statements = []
+
+    for sentence in blob.sentences:
+        # Simple heuristic: if sentiment polarity is negative, consider it a false statement
+        if sentence.sentiment.polarity < 0:
+            false_statements.append(str(sentence))
+    
+    return false_statements
+
+# Example usage
+video_id = 'YOUR_VIDEO_ID_HERE'  # Replace with the actual video ID
+false_statements = analyze_video(video_id)
+
+# Print the false statements
+for statement in false_statements:
+    print(statement)
